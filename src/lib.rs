@@ -142,6 +142,26 @@ mod test {
     use super::*;
 
     #[test]
+    fn f32_lt_zero_returns_zero() {
+        assert_eq!(FractionalU8::default(), FractionalU8::new_f32(-0.1));
+    }
+
+    #[test]
+    fn f64_lt_zero_returns_zero() {
+        assert_eq!(FractionalU8::default(), FractionalU8::new_f64(-0.1));
+    }
+
+    #[test]
+    fn f32_gt_one_returns_one() {
+        assert_eq!(FractionalU8::MAX, FractionalU8::new_f32(1.1));
+    }
+
+    #[test]
+    fn f64_gt_one_returns_one() {
+        assert_eq!(FractionalU8::MAX, FractionalU8::new_f64(1.1));
+    }
+
+    #[test]
     fn zero_is_zero_f32() {
         assert_eq!(0.0, FractionalU8::new(0).f32());
         assert_eq!(0.0, FractionalU16::new(0).f32());
