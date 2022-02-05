@@ -6,48 +6,53 @@ macro_rules! fractional_int {
         impl $i {
             pub const MAX: Self = Self::new(<$inner>::MAX);
 
+            #[inline]
             pub const fn new(value: $inner) -> Self {
                 Self(value)
             }
 
+            #[inline]
             pub fn new_f32(value: f32) -> Self {
                 const MAX: f32 = <$inner>::MAX as f32;
                 Self((value * MAX) as $inner)
             }
 
+            #[inline]
             pub fn new_f64(value: f64) -> Self {
                 const MAX: f64 = <$inner>::MAX as f64;
                 Self((value * MAX) as $inner)
             }
 
-            pub fn inverse(self) -> Self {
-                Self::new(<$inner>::MAX - self.0)
-            }
-
+            #[inline]
             pub fn $inner(self) -> $inner {
                 self.0
             }
 
+            #[inline]
             pub fn f32(self) -> f32 {
                 const MAX_INV: f32 = 1.0 / <$inner>::MAX as f32;
                 self.0 as f32 * MAX_INV
             }
 
+            #[inline]
             pub fn f64(self) -> f64 {
                 const MAX_INV: f64 = 1.0 / <$inner>::MAX as f64;
                 self.0 as f64 * MAX_INV
             }
 
+            #[inline]
             pub fn max(self, rhs: Self) -> Self {
                 Self(self.0.max(rhs.0))
             }
 
+            #[inline]
             pub fn min(self, rhs: Self) -> Self {
                 Self(self.0.min(rhs.0))
             }
         }
 
         impl From<$inner> for $i {
+            #[inline]
             fn from(value: $inner) -> Self {
                 Self(value)
             }
@@ -55,6 +60,7 @@ macro_rules! fractional_int {
 
         impl std::ops::Add for $i {
             type Output = $i;
+            #[inline]
             fn add(self, rhs: Self) -> Self {
                 Self(self.0.saturating_add(rhs.0))
             }
@@ -62,18 +68,21 @@ macro_rules! fractional_int {
 
         impl std::ops::Add<$inner> for $i {
             type Output = $i;
+            #[inline]
             fn add(self, rhs: $inner) -> Self {
                 Self(self.0.saturating_add(rhs))
             }
         }
 
         impl std::ops::AddAssign for $i {
+            #[inline]
             fn add_assign(&mut self, rhs: Self) {
                 self.0 = self.0.saturating_add(rhs.0);
             }
         }
 
         impl std::ops::AddAssign<$inner> for $i {
+            #[inline]
             fn add_assign(&mut self, rhs: $inner) {
                 self.0 = self.0.saturating_add(rhs);
             }
@@ -81,6 +90,7 @@ macro_rules! fractional_int {
 
         impl std::ops::Sub for $i {
             type Output = $i;
+            #[inline]
             fn sub(self, rhs: Self) -> Self {
                 Self(self.0.saturating_sub(rhs.0))
             }
@@ -88,18 +98,21 @@ macro_rules! fractional_int {
 
         impl std::ops::Sub<$inner> for $i {
             type Output = $i;
+            #[inline]
             fn sub(self, rhs: $inner) -> Self {
                 Self(self.0.saturating_sub(rhs))
             }
         }
 
         impl std::ops::SubAssign for $i {
+            #[inline]
             fn sub_assign(&mut self, rhs: Self) {
                 self.0 = self.0.saturating_sub(rhs.0);
             }
         }
 
         impl std::ops::SubAssign<$inner> for $i {
+            #[inline]
             fn sub_assign(&mut self, rhs: $inner) {
                 self.0 = self.0.saturating_sub(rhs);
             }
@@ -107,8 +120,9 @@ macro_rules! fractional_int {
 
         impl std::ops::Not for $i {
             type Output = Self;
+            #[inline]
             fn not(self) -> Self {
-                self.inverse()
+                Self::new(!self.0)
             }
         }
     };
@@ -247,5 +261,14 @@ mod test {
             FractionalU16::new_f32(0.24805), // rounding error
             FractionalU8::new_f32(0.5) * FractionalU8::new_f32(0.5)
         );
+    }
+
+    #[test]
+    fn not() {
+        use std::ops::Not;
+
+        assert_eq!(0, FractionalU8::new(255).not().u8());
+        assert_eq!(255, FractionalU8::new(0).not().u8());
+        assert_eq!(55, FractionalU8::new(200).not().u8());
     }
 }
