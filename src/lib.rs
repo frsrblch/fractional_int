@@ -65,13 +65,6 @@ macro_rules! fractional_int {
             }
         }
 
-        impl From<f32> for $i {
-            #[inline]
-            fn from(value: f32) -> Self {
-                Self::new_f32(value)
-            }
-        }
-
         impl std::ops::Add for $i {
             type Output = $i;
             #[inline]
