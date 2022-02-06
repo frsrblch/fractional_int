@@ -58,6 +58,20 @@ macro_rules! fractional_int {
             }
         }
 
+        impl From<f64> for $i {
+            #[inline]
+            fn from(value: f64) -> Self {
+                Self::new_f64(value)
+            }
+        }
+
+        impl From<f32> for $i {
+            #[inline]
+            fn from(value: f32) -> Self {
+                Self::new_f32(value)
+            }
+        }
+
         impl std::ops::Add for $i {
             type Output = $i;
             #[inline]
@@ -215,6 +229,12 @@ mod test {
     fn new_f64_half() {
         assert_eq!(u8::MAX / 2, FractionalU8::new_f64(0.5).0);
         assert_eq!(u16::MAX / 2, FractionalU16::new_f64(0.5).0);
+    }
+
+    #[test]
+    fn new_f64_two() {
+        assert_eq!(u8::MAX, FractionalU8::new_f64(2.0).0);
+        assert_eq!(u16::MAX, FractionalU16::new_f64(2.0).0);
     }
 
     #[test]
